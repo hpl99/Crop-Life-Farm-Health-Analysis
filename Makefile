@@ -1,17 +1,29 @@
-.PHONY: help up down ingest test lint
+.PHONY: help up down ingest test build run-api run-web
 
 help:
 	@echo "Nagpur Krishi Data Makefile"
-	@echo "  make ingest  - Run the full real-data ingestion pipeline"
-	@echo "  make test    - Run pytest test suite and CI guards"
-	@echo "  make up      - Start Docker Compose services"
-	@echo "  make down    - Stop Docker Compose services"
+	@echo "  make ingest   - Run the full real-data ingestion pipeline"
+	@echo "  make test     - Run pytest test suite and CI guards"
+	@echo "  make build    - Build production Next.js frontend"
+	@echo "  make run-api  - Run FastAPI backend on port 8000"
+	@echo "  make run-web  - Run Next.js frontend on port 3000"
+	@echo "  make up       - Start Docker Compose services"
+	@echo "  make down     - Stop Docker Compose services"
 
 ingest:
 	python packages/data-pipeline/src/ingestion/runner.py
 
 test:
 	pytest
+
+build:
+	npm --prefix apps/web run build
+
+run-api:
+	uvicorn apps.api.src.main:app --host 127.0.0.1 --port 8000
+
+run-web:
+	npm --prefix apps/web run dev
 
 up:
 	docker compose -f infra/docker-compose.yml up -d

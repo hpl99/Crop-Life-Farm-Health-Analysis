@@ -44,6 +44,18 @@ services:
     ports:
       - "8000:8000"
 
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+    container_name: nagpur_krishi_web
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:8000
+    ports:
+      - "3000:3000"
+
 volumes:
   postgres_data:
   minio_data:
