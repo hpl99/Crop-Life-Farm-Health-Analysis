@@ -45,7 +45,7 @@ export function TalukaDeepDive({
         if (!isMounted) return;
         setYieldHistory(yHist);
         setOutlook(outl);
-        setRainfallHistory(rfData.rainfall);
+        setRainfallHistory(rfData.data || (rfData as any).rainfall || []);
       })
       .catch((err) => {
         console.error("Failed to load deep dive data:", err);
@@ -62,7 +62,7 @@ export function TalukaDeepDive({
   // Aggregate annual monsoon rainfall for the last 5 available years
   const recentRainfallYears = [2020, 2021, 2022, 2023, 2024];
   const rainfallByYear: Record<number, number> = {};
-  rainfallHistory.forEach((r) => {
+  (rainfallHistory || []).forEach((r) => {
     if (recentRainfallYears.includes(r.year) && r.is_monsoon) {
       rainfallByYear[r.year] = (rainfallByYear[r.year] || 0) + r.rainfall_actual_mm;
     }

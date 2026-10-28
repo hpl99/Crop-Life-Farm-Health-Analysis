@@ -211,7 +211,7 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {outlook?.analog_years.map((row) => (
+              {(outlook?.analog_years || []).map((row) => (
                 <tr key={row.year} className="hover:bg-gray-50/70 transition-colors">
                   <td className="py-3 px-3 font-bold text-[#2F5D3A]">
                     {toDevanagari(row.year)}
