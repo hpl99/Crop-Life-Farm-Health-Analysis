@@ -248,3 +248,4 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
     </div>
   );
 }
+

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Mukta, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
+import { PwaRegister } from "@/components/PwaRegister";
 
 const mukta = Mukta({
   subsets: ["devanagari", "latin"],
@@ -44,8 +45,12 @@ export default function RootLayout({
   return (
     <html lang="mr" className={`${mukta.variable} ${notoDevanagari.variable}`}>
       <body className="min-h-screen bg-[#FAF5E9] text-[#2B2B26] antialiased">
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider>
+          <PwaRegister />
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );
 }
+

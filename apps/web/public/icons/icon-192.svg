@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="40" fill="#2F5D3A"/>
+  <circle cx="96" cy="96" r="70" fill="#3E7A4D" opacity="0.4"/>
+  <text x="96" y="122" font-family="'Noto Sans Devanagari', 'Mukta', sans-serif" font-size="82" font-weight="bold" fill="#FAF5E9" text-anchor="middle">ना</text>
+  <circle cx="140" cy="54" r="10" fill="#D9A441"/>
+</svg>

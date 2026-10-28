@@ -170,3 +170,4 @@ export function HomeTab({ summary, onNavigateTab }: HomeTabProps) {
     </div>
   );
 }
+

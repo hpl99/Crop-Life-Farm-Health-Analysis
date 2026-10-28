@@ -122,3 +122,4 @@ export function MapTab({ tehsils, selectedTehsil, onSelectTehsil }: MapTabProps)
     </div>
   );
 }
+

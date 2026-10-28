@@ -104,3 +104,4 @@ export function NormalVsActualChart({ summary }: NormalVsActualChartProps) {
     </div>
   );
 }
+

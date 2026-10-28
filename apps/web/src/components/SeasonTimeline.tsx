@@ -128,3 +128,4 @@ export function SeasonTimeline() {
     </div>
   );
 }
+

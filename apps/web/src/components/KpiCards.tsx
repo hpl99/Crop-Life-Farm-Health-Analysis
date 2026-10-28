@@ -115,3 +115,4 @@ export function KpiCards({ summary }: KpiCardsProps) {
     </div>
   );
 }
+
