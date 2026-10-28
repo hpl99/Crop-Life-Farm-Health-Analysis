@@ -131,7 +131,7 @@ export function Header({
             <AlertTriangle className="w-4 h-4 text-[#B5532F] shrink-0" />
             <span>
               {droughtStatus
-                ? `${droughtStatus.drought_talukas}/${droughtStatus.total_talukas} ${isMarathi ? "दुष्काळग्रस्त" : "Drought-Affected"}`
+                ? (isMarathi ? droughtStatus.status_label_mr : droughtStatus.status_label_en)
                 : t("app.drought_badge")}
             </span>
           </div>

@@ -74,10 +74,10 @@ export function TalukaDeepDive({
     { id: "rice", label_mr: "भात (धान)", label_en: "Rice" },
   ];
 
-  const recentYields = yieldHistory?.history.slice(-5) || [];
+  const recentYields = (yieldHistory?.data || []).slice(-5);
   const maxYield = Math.max(
-    ...recentYields.map((y) => y.yield_kg_ha),
-    outlook?.prediction_interval_80[1] ?? 1200,
+    ...(recentYields.map((y) => y.yield_kg_ha || 0)),
+    outlook?.range_80_kg_ha?.[1] ?? 1200,
     1000
   );
 
@@ -172,40 +172,41 @@ export function TalukaDeepDive({
 
           <div className="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-1 border-b border-gray-200">
             {recentYields.map((pt) => {
-              const heightPct = Math.min(100, (pt.yield_kg_ha / maxYield) * 100);
+              const yVal = pt.yield_kg_ha || 0;
+              const heightPct = Math.min(100, (yVal / maxYield) * 100);
               return (
-                <div key={pt.year} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                <div key={pt.crop_year} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
                   <span className="text-[10px] font-bold text-[#2B2B26]">
-                    {toDevanagari(Math.round(pt.yield_kg_ha))}
+                    {toDevanagari(Math.round(yVal))}
                   </span>
                   <div
                     className="w-full max-w-[32px] bg-[#2F5D3A] rounded-t-lg transition-all duration-500"
                     style={{ height: `${heightPct}%` }}
-                    title={`${pt.year}: ${pt.yield_kg_ha} kg/ha`}
+                    title={`${pt.crop_year}: ${yVal} kg/ha`}
                   />
                   <span className="text-[10px] font-semibold text-[#2B2B26]/70">
-                    {toDevanagari(pt.year)}
+                    {toDevanagari(pt.crop_year)}
                   </span>
                 </div>
               );
             })}
 
             {/* 2026 Hatched Outlook Range Bar */}
-            {outlook && (
+            {outlook && outlook.range_80_kg_ha && (
               <div className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
                 <span className="text-[9px] font-extrabold text-[#B5532F] text-center leading-tight">
-                  {toDevanagari(Math.round(outlook.prediction_interval_80[0]))}-
-                  {toDevanagari(Math.round(outlook.prediction_interval_80[1]))}
+                  {toDevanagari(Math.round(outlook.range_80_kg_ha[0]))}-
+                  {toDevanagari(Math.round(outlook.range_80_kg_ha[1]))}
                 </span>
                 <div
                   className="w-full max-w-[32px] rounded-t-lg border-2 border-dashed border-[#B5532F] hatch-pattern transition-all duration-500"
                   style={{
                     height: `${Math.min(
                       100,
-                      (outlook.predicted_yield_kg_ha / maxYield) * 100
+                      ((outlook.point_estimate_kg_ha || 700) / maxYield) * 100
                     )}%`,
                   }}
-                  title={`2026 Range: [${outlook.prediction_interval_80[0]}, ${outlook.prediction_interval_80[1]}] kg/ha`}
+                  title={`2026 Range: [${outlook.range_80_kg_ha[0]}, ${outlook.range_80_kg_ha[1]}] kg/ha`}
                 />
                 <span className="text-[10px] font-bold text-[#B5532F]">
                   २०२६*

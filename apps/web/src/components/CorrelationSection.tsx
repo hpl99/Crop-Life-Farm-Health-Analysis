@@ -50,11 +50,12 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
   }, [crop, isMarathi]);
 
   // Scatter points scaling
-  const points = responseResult?.points || [];
+  const points = responseResult?.scatter_points || [];
+  const trendLine = responseResult?.trend_line || [];
   const minRf = 400;
   const maxRf = 1600;
-  const minY = 300;
-  const maxY = 2000;
+  const minY = 200;
+  const maxY = 1800;
 
   return (
     <div className="space-y-6">
@@ -81,7 +82,7 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
               <span>p = {responseResult.p_value.toFixed(4)}</span>
               <span>•</span>
               <span>
-                {isMarathi ? "वार्षिक नमुने" : "Years"}: {responseResult.n_years}
+                {isMarathi ? "नमुने" : "Points"}: {points.length}
               </span>
             </div>
           )}
@@ -97,22 +98,12 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
             <line x1="50" y1="170" x2="580" y2="170" stroke="#e5e7eb" strokeDasharray="4 4" />
 
             {/* Regression line */}
-            {responseResult && (
+            {trendLine.length >= 2 && (
               <line
-                x1="60"
-                y1={
-                  190 -
-                  ((responseResult.intercept + responseResult.slope * 450 - minY) /
-                    (maxY - minY)) *
-                    170
-                }
-                x2="570"
-                y2={
-                  190 -
-                  ((responseResult.intercept + responseResult.slope * 1500 - minY) /
-                    (maxY - minY)) *
-                    170
-                }
+                x1={50 + ((trendLine[0].rainfall_mm - minRf) / (maxRf - minRf)) * 520}
+                y1={190 - ((trendLine[0].yield_kg_ha - minY) / (maxY - minY)) * 170}
+                x2={50 + ((trendLine[trendLine.length - 1].rainfall_mm - minRf) / (maxRf - minRf)) * 520}
+                y2={190 - ((trendLine[trendLine.length - 1].yield_kg_ha - minY) / (maxY - minY)) * 170}
                 stroke="#2F5D3A"
                 strokeWidth="2.5"
                 strokeDasharray="6 3"
@@ -121,7 +112,7 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
 
             {/* Scatter dots */}
             {points.map((pt) => {
-              const cx = 50 + ((pt.monsoon_rf_mm - minRf) / (maxRf - minRf)) * 520;
+              const cx = 50 + ((pt.rainfall_mm - minRf) / (maxRf - minRf)) * 520;
               const cy = 190 - ((pt.yield_kg_ha - minY) / (maxY - minY)) * 170;
               if (cx < 50 || cx > 580 || cy < 10 || cy > 190) return null;
               return (
@@ -134,7 +125,7 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
                   opacity="0.8"
                   className="hover:r-6 hover:fill-[#B5532F] transition-all cursor-pointer"
                 >
-                  <title>{`${pt.year}: ${pt.monsoon_rf_mm} mm, ${pt.yield_kg_ha} kg/ha`}</title>
+                  <title>{`${pt.year}: ${pt.rainfall_mm} mm, ${pt.yield_kg_ha} kg/ha`}</title>
                 </circle>
               );
             })}
@@ -167,23 +158,23 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
             <span>{t("plain_view.title")}</span>
           </div>
           <p className="text-sm lg:text-base text-[#2B2B26] leading-relaxed">
-            {isMarathi
-              ? outlook.plain_language_summary_mr
-              : outlook.plain_language_summary_en}
+            {responseResult?.interpretation ||
+              (isMarathi
+                ? "मागील ऐतिहासिक पर्जन्यमान व उत्पादनाच्या विश्लेषणावर आधारित वास्तववादी निष्कर्ष."
+                : "Empirical findings based on long-term historical crop yield and monsoon data.")}
           </p>
           <div className="pt-2 border-t border-[#2F5D3A]/10 flex flex-wrap items-center justify-between text-xs text-[#2B2B26]/70 gap-2">
             <span className="font-semibold text-[#B5532F]">
               {isMarathi
                 ? "२०२६ संभाव्य उत्पादन श्रेणी: "
                 : "2026 Expected Yield Range: "}
-              {toDevanagari(outlook.prediction_interval_80[0])} -{" "}
-              {toDevanagari(outlook.prediction_interval_80[1])} kg/ha
+              {outlook?.range_80_kg_ha
+                ? `${toDevanagari(Math.round(outlook.range_80_kg_ha[0]))} - ${toDevanagari(Math.round(outlook.range_80_kg_ha[1]))}`
+                : "—"}{" "}
+              kg/ha
             </span>
             <span>
-              {isMarathi
-                ? "ऑलिम्पिक ५-वर्ष बेसलाइन MAE: "
-                : "Olympic 5-Year Baseline MAE: "}
-              {outlook.baseline_olympic_mae.toFixed(1)} kg/ha
+              {outlook?.confidence_disclaimer}
             </span>
           </div>
         </div>
@@ -235,9 +226,7 @@ export function CorrelationSection({ crop = "soybean" }: CorrelationSectionProps
                     {toDevanagari(Math.round(row.yield_kg_ha))}
                   </td>
                   <td className="py-3 px-3 text-[#2B2B26]/80">
-                    {isMarathi
-                      ? row.event_description_mr || "शासकीय दुष्काळ जाहीर"
-                      : row.event_description_en || "Official drought declared"}
+                    {row.summary}
                   </td>
                 </tr>
               ))}

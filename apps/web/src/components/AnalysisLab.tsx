@@ -75,7 +75,7 @@ export function AnalysisLab() {
             <div className="font-bold text-[#2F5D3A] border-b pb-1.5 flex items-center justify-between">
               <span>{s.label}</span>
               <span className="text-[11px] text-gray-500 font-normal">
-                N = {s.count}
+                N = {s.n ?? s.count}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-[11px]">
@@ -133,8 +133,8 @@ export function AnalysisLab() {
           </div>
           <p className="leading-relaxed text-[11px]">
             {isMarathi
-              ? corr.plain_takeaway_mr
-              : corr.plain_takeaway_en}
+              ? corr.interpretation_mr || corr.plain_takeaway_mr
+              : corr.interpretation_en || corr.plain_takeaway_en}
           </p>
           <div className="flex gap-4 text-[10px] text-emerald-800 pt-1 border-t border-emerald-200/60">
             <span>Pearson r: {corr.pearson_r.toFixed(3)} (p = {corr.pearson_p_value.toFixed(4)})</span>

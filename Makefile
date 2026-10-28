@@ -1,7 +1,8 @@
-.PHONY: help up down ingest test build run-api run-web
+.PHONY: help up down ingest test build run-api run-web run
 
 help:
 	@echo "Nagpur Krishi Data Makefile"
+	@echo "  make run      - Run both Backend and Frontend with a single command"
 	@echo "  make ingest   - Run the full real-data ingestion pipeline"
 	@echo "  make test     - Run pytest test suite and CI guards"
 	@echo "  make build    - Build production Next.js frontend"
@@ -9,6 +10,9 @@ help:
 	@echo "  make run-web  - Run Next.js frontend on port 3000"
 	@echo "  make up       - Start Docker Compose services"
 	@echo "  make down     - Stop Docker Compose services"
+
+run:
+	python scripts/start_dev.py
 
 ingest:
 	python packages/data-pipeline/src/ingestion/runner.py
