@@ -39,3 +39,4 @@ def save_raw_snapshot(filename: str, content: bytes, source_meta: Dict[str, Any]
     manifest_path.write_text(json.dumps(manifest, indent=2))
 
     return filepath
+

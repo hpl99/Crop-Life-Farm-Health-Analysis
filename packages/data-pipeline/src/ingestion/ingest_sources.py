@@ -141,3 +141,4 @@ def ingest_crops(db: Session):
             crop = DimCrop(**c_data)
             db.add(crop)
     db.commit()
+

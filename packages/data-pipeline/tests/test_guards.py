@@ -100,3 +100,4 @@ def test_guard_no_hardcoded_statistics_in_web():
                 violations.append(f"{file_path}: contains banned prototype mockup literal '{literal}'")
 
     assert not violations, "Hardcoded statistics guard failed:\n" + "\n".join(violations)
+

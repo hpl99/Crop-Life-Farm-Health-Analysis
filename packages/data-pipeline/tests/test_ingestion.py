@@ -78,3 +78,4 @@ def test_official_2026_drought_event(db):
     assert drought_ev.reported_value == "14/14"
     assert drought_ev.trust_tier == "OFFICIAL_ANNOUNCEMENT"
     assert "DM-2026/CR-142/M-3" in drought_ev.citation
+

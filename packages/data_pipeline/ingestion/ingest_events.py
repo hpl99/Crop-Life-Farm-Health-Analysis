@@ -60,3 +60,4 @@ def ingest_events(db: Session):
             event = EventsOfficial(**ev)
             db.add(event)
     db.commit()
+

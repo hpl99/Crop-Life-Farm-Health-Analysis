@@ -200,3 +200,4 @@ class ModelMetrics(Base):
     p_value: Mapped[Optional[float]] = mapped_column(Float)
     baseline_mae: Mapped[float] = mapped_column(Float, nullable=False)
     beats_baseline: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+

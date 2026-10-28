@@ -30,3 +30,4 @@ def ingest_tehsils(db: Session):
             tehsil = DimTehsil(**t)
             db.add(tehsil)
     db.commit()
+
