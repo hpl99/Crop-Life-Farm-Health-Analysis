@@ -20,3 +20,4 @@ class ProblemDetails(BaseModel):
     status: int = Field(..., description="HTTP status code")
     detail: str = Field(..., description="Human-readable explanation specific to this occurrence")
     instance: Optional[str] = Field(None, description="URI reference identifying the specific occurrence")
+

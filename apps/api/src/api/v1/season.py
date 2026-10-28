@@ -1,6 +1,6 @@
 """Season summary and Weather Forecast API endpoints."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 import requests
 from fastapi import APIRouter, Depends, Query, Header, HTTPException
@@ -31,7 +31,7 @@ def get_season_summary(
 ):
     """Retrieve 2026 Monsoon Season summary KPIs."""
     lang = get_requested_language(accept_language)
-    as_of = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    as_of = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return SeasonSummaryResponse(
         season_year=2026,
@@ -98,7 +98,7 @@ def get_weather_forecast(
             "forecast_days": days,
             "meta": ResponseMeta(
                 sources=["SRC_OPEN_METEO"],
-                as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
                 trust_tier="DERIVED",
                 n_observations=len(days)
             )
@@ -108,3 +108,4 @@ def get_weather_forecast(
             status_code=502,
             detail=f"Upstream weather service temporarily unavailable: {str(e)}"
         )
+

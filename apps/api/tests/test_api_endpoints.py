@@ -144,3 +144,4 @@ def test_etag_caching():
 
     res2 = client.get("/api/v1/season/current/summary", headers={"if-none-match": etag})
     assert res2.status_code == 304
+

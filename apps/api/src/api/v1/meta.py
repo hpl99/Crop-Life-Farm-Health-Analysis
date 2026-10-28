@@ -2,7 +2,7 @@
 
 import io
 import csv
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import List, Dict, Any
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
@@ -17,7 +17,7 @@ router = APIRouter(tags=["Metadata"])
 def get_sources(db: Session = Depends(get_db)):
     """Retrieve list of active data sources and licenses."""
     sources = db.query(Source).all()
-    as_of = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    as_of = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return {
         "sources": [
@@ -75,3 +75,4 @@ def export_dataset_csv(db: Session = Depends(get_db)):
         media_type="text/csv",
         headers={"Content-Disposition": 'attachment; filename="nagpur_krishi_data_verified.csv"'}
     )
+

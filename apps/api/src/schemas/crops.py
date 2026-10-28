@@ -77,3 +77,4 @@ class RainfallResponseResult(BaseModel):
     scatter_points: List[dict]
     trend_line: List[dict]
     meta: ResponseMeta
+

@@ -52,3 +52,4 @@ class RainfallNormalItem(BaseModel):
 class RainfallNormalResponse(BaseModel):
     normals: List[RainfallNormalItem]
     meta: ResponseMeta
+

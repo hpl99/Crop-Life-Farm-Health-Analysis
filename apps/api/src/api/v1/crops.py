@@ -1,7 +1,7 @@
 """Crops, Yields, Rainfall-Response, and Outlook API endpoints."""
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional, List
 from fastapi import APIRouter, Depends, Query, Header, HTTPException
 from sqlalchemy.orm import Session
@@ -39,7 +39,7 @@ def get_crops(db: Session = Depends(get_db)):
         crops=items,
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_STATISTIC",
             n_observations=len(items)
         )
@@ -84,7 +84,7 @@ def get_crop_yield_history(
         data=items,
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_STATISTIC",
             n_observations=len(items)
         )
@@ -158,7 +158,7 @@ def get_crop_rainfall_response(
         trend_line=trend_line,
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD", "SRC_IMD_RAINFALL"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="DERIVED",
             n_observations=len(scatter_points)
         )
@@ -220,8 +220,9 @@ def get_crop_outlook(
         analog_years=analog_items,
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD", "SRC_IMD_RAINFALL", "SRC_CRIDA_PLAN"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="DERIVED",
             n_observations=len(df)
         )
     )
+

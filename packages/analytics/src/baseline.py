@@ -44,3 +44,4 @@ def compute_rolling_olympic_baseline(df: pd.DataFrame, window: int = 5) -> pd.Da
 
     df["baseline_olympic"] = olympic_vals
     return df
+

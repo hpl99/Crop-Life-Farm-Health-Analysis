@@ -1,6 +1,6 @@
 """Tehsils and Drought status endpoints."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 from apps.api.src.db.session import get_db
@@ -40,7 +40,7 @@ def get_tehsils(db: Session = Depends(get_db)):
         features=features,
         meta=ResponseMeta(
             sources=["SRC_CENSUS_LGD", "SRC_CRIDA_PLAN"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_STATISTIC",
             n_observations=len(tehsils)
         )
@@ -68,8 +68,9 @@ def get_drought_status(
         resolution_citation=citation,
         meta=ResponseMeta(
             sources=["SRC_MAHA_GR"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_ANNOUNCEMENT",
             n_observations=14
         )
     )
+

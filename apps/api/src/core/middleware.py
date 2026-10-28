@@ -37,3 +37,4 @@ def get_requested_language(accept_language: str = None) -> str:
     if "en" in al and not ("mr" in al and al.index("mr") < al.index("en")):
         return "en"
     return "mr"
+

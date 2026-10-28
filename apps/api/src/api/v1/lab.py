@@ -1,6 +1,6 @@
 """Analysis Lab endpoints for educational and statistical exploration."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
@@ -38,7 +38,7 @@ def get_lab_descriptive_stats(
         metrics=[stats_yield, stats_rain],
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD", "SRC_IMD_RAINFALL"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="DERIVED",
             n_observations=len(df)
         )
@@ -68,7 +68,7 @@ def get_lab_correlation(
         analysis=corr,
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD", "SRC_IMD_RAINFALL"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="DERIVED",
             n_observations=len(df)
         )
@@ -108,8 +108,9 @@ def get_lab_regression(
         diagnostics=diagnostics,
         meta=ResponseMeta(
             sources=["SRC_UPAG_DES", "SRC_ICRISAT_DLD", "SRC_IMD_RAINFALL"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="DERIVED",
             n_observations=len(df)
         )
     )
+

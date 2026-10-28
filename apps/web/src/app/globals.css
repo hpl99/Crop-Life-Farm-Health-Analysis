@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-cream: #FAF5E9;
+  --text-charcoal: #2B2B26;
+  --forest-primary: #2F5D3A;
+  --ochre-deficit: #D9A441;
+  --terracotta-severe: #B5532F;
+  --teal-surplus: #2F7F86;
+}
+
+[data-theme="high-contrast"] {
+  --bg-cream: #FFFFFF;
+  --text-charcoal: #000000;
+  --forest-primary: #004D1A;
+  --ochre-deficit: #8A5D00;
+  --terracotta-severe: #990000;
+  --teal-surplus: #004D55;
+}
+
+[data-text-size="large"] {
+  font-size: 115%;
+}
+
+[data-text-size="xlarge"] {
+  font-size: 130%;
+}
+
+body {
+  background-color: var(--bg-cream);
+  color: var(--text-charcoal);
+  font-family: var(--font-mukta), var(--font-noto-devanagari), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for mobile strips */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hatch pattern for unavailable local data (honest degradation) */
+.hatch-pattern {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 6px,
+    rgba(181, 83, 47, 0.15) 6px,
+    rgba(181, 83, 47, 0.15) 12px
+  );
+}

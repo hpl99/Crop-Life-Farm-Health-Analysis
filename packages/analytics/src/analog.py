@@ -60,3 +60,4 @@ def find_analog_years(
         })
 
     return analogs
+

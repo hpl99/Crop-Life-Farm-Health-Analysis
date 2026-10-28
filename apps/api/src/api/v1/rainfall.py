@@ -1,6 +1,6 @@
 """Monthly rainfall and normals endpoints."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional, List
 from fastapi import APIRouter, Depends, Query, Header
 from sqlalchemy.orm import Session
@@ -70,7 +70,7 @@ def get_monthly_rainfall(
         data=items,
         meta=ResponseMeta(
             sources=["SRC_IMD_RAINFALL"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_STATISTIC",
             n_observations=len(items)
         )
@@ -101,8 +101,9 @@ def get_rainfall_normals(db: Session = Depends(get_db)):
         normals=items,
         meta=ResponseMeta(
             sources=["SRC_CRIDA_PLAN"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_STATISTIC",
             n_observations=len(items)
         )
     )
+

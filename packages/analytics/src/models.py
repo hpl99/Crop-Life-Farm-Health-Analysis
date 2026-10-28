@@ -186,3 +186,4 @@ class CropYieldRegressionModel:
             "baseline_mae": round(self.loocv_mae_baseline, 1),
             "confidence_disclaimer": "अंदाज (अधिकृत पीक कापणी प्रयोग अहवाल येईपर्यंत) / Estimate until official CCE publication"
         }
+

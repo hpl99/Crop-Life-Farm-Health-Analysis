@@ -138,3 +138,4 @@ def compute_two_way_anova(df: pd.DataFrame) -> Dict[str, Any]:
         "interpretation_en": "Significant yield variation exists across crop types and technological eras.",
         "interpretation_mr": "पिकांच्या प्रकारानुसार आणि तंत्रज्ञानाच्या काळानुसार उत्पादकतेत लक्षणीय फरक दिसून येतो."
     }
+

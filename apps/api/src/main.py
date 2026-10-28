@@ -7,7 +7,6 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from apps.api.src.core.errors import register_error_handlers
@@ -23,20 +22,12 @@ from apps.api.src.api.v1.crops import router as crops_router
 from apps.api.src.api.v1.markets import router as markets_router
 from apps.api.src.api.v1.lab import router as lab_router
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    init_db()
-    yield
-
-
 app = FastAPI(
     title="Nagpur Krishi Data API (नागपूर शेती आकडे)",
     description="High-fidelity agricultural statistics, rainfall models, and market intelligence for farmers of Nagpur district.",
     version="1.0.0",
     docs_url="/docs",
-    openapi_url="/api/v1/openapi.json",
-    lifespan=lifespan,
+    openapi_url="/api/v1/openapi.json"
 )
 
 # 1. CORS Middleware
@@ -65,6 +56,11 @@ app.include_router(markets_router, prefix=api_v1_prefix)
 app.include_router(lab_router, prefix=api_v1_prefix)
 
 
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+
 @app.get("/healthz", tags=["System Health"])
 def health_check():
     """Liveness probe."""
@@ -75,3 +71,4 @@ def health_check():
 def readiness_check():
     """Readiness probe."""
     return {"status": "ready"}
+

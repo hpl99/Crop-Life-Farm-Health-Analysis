@@ -72,3 +72,4 @@ class LabRegressionResponse(BaseModel):
     crop_id: str
     diagnostics: Dict[str, Any]
     meta: ResponseMeta
+

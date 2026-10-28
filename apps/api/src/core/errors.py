@@ -50,3 +50,4 @@ def register_error_handlers(app):
             content=payload,
             headers={"Content-Type": "application/problem+json"}
         )
+

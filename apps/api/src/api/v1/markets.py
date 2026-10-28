@@ -1,6 +1,6 @@
 """Mandi Market Prices API endpoint."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional, List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -52,8 +52,9 @@ def get_market_prices(
         data=items,
         meta=ResponseMeta(
             sources=["SRC_MSAMB_CMO"],
-            as_of=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            as_of=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             trust_tier="OFFICIAL_STATISTIC",
             n_observations=len(items)
         )
     )
+
