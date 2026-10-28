@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: nagpur_krishi_db
+    environment:
+      POSTGRES_USER: nagpur_user
+      POSTGRES_PASSWORD: nagpur_secure_password
+      POSTGRES_DB: nagpur_krishi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nagpur_user -d nagpur_krishi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:RELEASE.2024-01-16T16-07-38Z
+    container_name: nagpur_krishi_minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+    container_name: nagpur_krishi_api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://nagpur_user:nagpur_secure_password@db:5432/nagpur_krishi
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+  minio_data:
