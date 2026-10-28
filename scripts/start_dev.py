@@ -6,20 +6,60 @@ import time
 import os
 from pathlib import Path
 
+# Fix Windows console encoding for Unicode characters
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT_DIR = Path(__file__).resolve().parents[1]
+
+def free_port(port: int):
+    """Ensure port is not held by a stale background process."""
+    if sys.platform == "win32":
+        try:
+            res = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", f"(Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue).OwningProcess"],
+                capture_output=True, text=True
+            )
+            for line in res.stdout.strip().splitlines():
+                pid_str = line.strip()
+                if pid_str and pid_str != "0" and pid_str.isdigit() and int(pid_str) != os.getpid():
+                    subprocess.run(["taskkill", "/F", "/PID", pid_str], capture_output=True)
+        except Exception:
+            pass
 
 def main():
     print("=" * 60)
-    print("Starting Nagpur Krishi Data (नागपूर शेती आकडे)")
+    print("Starting Nagpur Krishi Data (Nagpur Sheti Aakade)")
     print("=" * 60)
+
+    # Free any lingering processes on ports 8000 and 3000
+    free_port(8000)
+    free_port(3000)
+
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
 
     # 1. Start FastAPI backend
     print("[1/2] Starting FastAPI Backend on http://127.0.0.1:8000 ...")
     api_cmd = [sys.executable, "-m", "uvicorn", "apps.api.src.main:app", "--host", "127.0.0.1", "--port", "8000"]
-    api_proc = subprocess.Popen(api_cmd, cwd=str(ROOT_DIR))
+    api_proc = subprocess.Popen(api_cmd, cwd=str(ROOT_DIR), env=env)
 
-    # Give backend a moment to boot
-    time.sleep(2)
+    # Wait for backend health probe
+    import urllib.request
+    backend_ready = False
+    for attempt in range(15):
+        time.sleep(0.5)
+        try:
+            with urllib.request.urlopen("http://127.0.0.1:8000/healthz", timeout=1) as resp:
+                if resp.status == 200:
+                    backend_ready = True
+                    print("       Backend verified ready on port 8000!")
+                    break
+        except Exception:
+            pass
+
+    if not backend_ready:
+        print("WARNING: Backend health check did not return 200 within 7.5s, proceeding anyway...")
 
     # 2. Start Next.js frontend
     print("[2/2] Starting Next.js Web App on http://localhost:3000 ...")
@@ -54,3 +94,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
