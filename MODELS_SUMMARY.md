@@ -84,3 +84,4 @@ All model artifacts and LOOCV validation metrics are stored in the curated datab
   - `GET /api/v1/crops/{crop}/rainfall-response`
   - `GET /api/v1/outlook/{crop}?deficit_pct=-34.0`
   - `GET /api/v1/lab/regression?crop=soybean`
+
