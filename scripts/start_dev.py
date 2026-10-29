@@ -35,6 +35,7 @@ def main():
     # Free any lingering processes on ports 8000 and 3000
     free_port(8000)
     free_port(3000)
+    time.sleep(1.0)  # Allow Windows TCP socket cleanup time
 
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
