@@ -63,8 +63,10 @@ export function TalukaDeepDive({
   const recentRainfallYears = [2020, 2021, 2022, 2023, 2024];
   const rainfallByYear: Record<number, number> = {};
   (rainfallHistory || []).forEach((r) => {
-    if (recentRainfallYears.includes(r.year) && r.is_monsoon) {
-      rainfallByYear[r.year] = (rainfallByYear[r.year] || 0) + r.rainfall_actual_mm;
+    const val = r.rainfall_actual_mm ?? r.rainfall_mm ?? 0;
+    const isMonsoon = r.is_monsoon ?? (r.month >= 6 && r.month <= 9);
+    if (recentRainfallYears.includes(r.year) && isMonsoon) {
+      rainfallByYear[r.year] = (rainfallByYear[r.year] || 0) + val;
     }
   });
 
@@ -73,6 +75,20 @@ export function TalukaDeepDive({
     { id: "cotton", label_mr: "कापूस", label_en: "Cotton" },
     { id: "rice", label_mr: "भात (धान)", label_en: "Rice" },
   ];
+
+  const selectedFeature = tehsils?.features.find(
+    (f) => f.properties.tehsil_id === selectedTehsil
+  );
+  const selectedTehsilName = selectedFeature
+    ? (isMarathi ? selectedFeature.properties.name_mr : selectedFeature.properties.name_en)
+    : (isMarathi ? "नागपूर जिल्हा सरासरी" : "Nagpur District Average");
+  const normalRf = selectedFeature?.properties.annual_normal_rf_mm ?? 936.1;
+
+  const maxRainfall = Math.max(
+    ...recentRainfallYears.map((yr) => rainfallByYear[yr] || 0),
+    normalRf,
+    1200
+  );
 
   const recentYields = (yieldHistory?.data || []).slice(-5);
   const maxYield = Math.max(
@@ -89,6 +105,9 @@ export function TalukaDeepDive({
           <h2 className="text-lg font-bold text-[#2B2B26] flex items-center gap-2">
             <Sprout className="w-5 h-5 text-[#2F5D3A]" />
             <span>{t("nav.deep_dive")}</span>
+            <span className="text-xs font-semibold text-[#2F5D3A] bg-[#2F5D3A]/10 px-2.5 py-0.5 rounded-full">
+              {selectedTehsilName}
+            </span>
           </h2>
           <p className="text-xs text-[#2B2B26]/60">
             {isMarathi
@@ -97,21 +116,43 @@ export function TalukaDeepDive({
           </p>
         </div>
 
-        {/* Crop Selector Tabs */}
-        <div className="flex bg-[#FAF5E9] p-1 rounded-2xl border border-[#2F5D3A]/15">
-          {crops.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setSelectedCrop(c.id as any)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                selectedCrop === c.id
-                  ? "bg-[#2F5D3A] text-white shadow-sm"
-                  : "text-[#2B2B26]/70 hover:text-[#2B2B26]"
-              }`}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Quick Tehsil Selector */}
+          <div className="relative">
+            <select
+              value={selectedTehsil ?? ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                onSelectTehsil(val === "" ? null : Number(val));
+              }}
+              className="bg-[#FAF5E9] text-xs font-bold text-[#2B2B26] px-3 py-1.5 rounded-xl border border-[#2F5D3A]/20 focus:outline-none focus:ring-2 focus:ring-[#2F5D3A]/30 cursor-pointer"
+              aria-label={t("taluka.select")}
             >
-              {isMarathi ? c.label_mr : c.label_en}
-            </button>
-          ))}
+              <option value="">{t("app.all_talukas")}</option>
+              {tehsils?.features.map((f) => (
+                <option key={f.properties.tehsil_id} value={f.properties.tehsil_id}>
+                  {isMarathi ? f.properties.name_mr : f.properties.name_en}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Crop Selector Tabs */}
+          <div className="flex bg-[#FAF5E9] p-1 rounded-2xl border border-[#2F5D3A]/15">
+            {crops.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCrop(c.id as any)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  selectedCrop === c.id
+                    ? "bg-[#2F5D3A] text-white shadow-sm"
+                    : "text-[#2B2B26]/70 hover:text-[#2B2B26]"
+                }`}
+              >
+                {isMarathi ? c.label_mr : c.label_en}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -119,28 +160,33 @@ export function TalukaDeepDive({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 1. Rainfall 5-Year History */}
         <div className="bg-[#FAF5E9]/40 rounded-2xl p-4 border border-[#2F5D3A]/10 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-[#2B2B26]">
-              {t("taluka.history_title")}
-            </span>
-            <span className="text-[11px] text-[#2F5D3A] font-semibold">
-              {isMarathi ? "सरासरी: ९३६.१ मिमी" : "Normal: 936.1 mm"}
+          <div className="flex flex-wrap items-center justify-between gap-1 mb-3">
+            <div>
+              <span className="text-xs font-bold text-[#2B2B26] block">
+                {selectedTehsilName} • {t("taluka.history_title")}
+              </span>
+              <span className="text-[10px] text-[#2B2B26]/60">
+                {isMarathi ? "जून-सप्टेंबर मान्सून प्रत्यक्ष पाऊस" : "Jun-Sep Monsoon Actual Rainfall"}
+              </span>
+            </div>
+            <span className="text-[11px] text-[#2F5D3A] font-bold bg-[#2F5D3A]/10 px-2 py-0.5 rounded-lg">
+              {isMarathi ? `दीर्घकालीन सरासरी: ${toDevanagari(normalRf)} मिमी` : `Normal: ${normalRf} mm`}
             </span>
           </div>
 
           <div className="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-1 border-b border-gray-200">
             {recentRainfallYears.map((yr) => {
-              const val = rainfallByYear[yr] || 850 + (yr % 4) * 80;
-              const heightPct = Math.min(100, (val / 1300) * 100);
+              const val = rainfallByYear[yr] || 0;
+              const heightPct = val > 0 ? Math.min(100, (val / (maxRainfall * 1.08)) * 100) : 4;
               return (
                 <div key={yr} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
                   <span className="text-[10px] font-bold text-[#2B2B26]">
-                    {toDevanagari(Math.round(val))}
+                    {val > 0 ? toDevanagari(Math.round(val)) : "—"}
                   </span>
                   <div
-                    className="w-full max-w-[36px] bg-[#2F7F86] rounded-t-lg transition-all duration-500"
+                    className="w-full max-w-[36px] bg-[#2F7F86] rounded-t-lg transition-all duration-500 shadow-sm"
                     style={{ height: `${heightPct}%` }}
-                    title={`${yr}: ${val.toFixed(1)} mm`}
+                    title={`${selectedTehsilName} (${yr}): ${val > 0 ? val.toFixed(1) : 0} mm`}
                   />
                   <span className="text-[10px] font-semibold text-[#2B2B26]/70">
                     {toDevanagari(yr)}
@@ -151,7 +197,11 @@ export function TalukaDeepDive({
           </div>
 
           <div className="pt-2 text-[10px] text-[#2B2B26]/60 flex items-center justify-between">
-            <span>{isMarathi ? "स्रोत: भारतीय हवामान विभाग (IMD)" : "Source: IMD Daily Circle Series"}</span>
+            <span>
+              {isMarathi
+                ? (selectedTehsil ? "स्रोत: ERA5 / Open-Meteo (तालुका केंद्र)" : "स्रोत: भारतीय हवामान विभाग (जिल्हा सरासरी)")
+                : (selectedTehsil ? "Source: ERA5 Reanalysis (Tehsil Centroid)" : "Source: IMD District Series")}
+            </span>
             <span className="text-[#2F7F86] font-semibold">
               {isMarathi ? "पावसाचे आकडे (मिमी)" : "Rainfall (mm)"}
             </span>
@@ -216,13 +266,22 @@ export function TalukaDeepDive({
           </div>
 
           {/* Honest Disclaimer Callout */}
-          <div className="pt-2 flex items-center justify-between text-[10px] text-[#2B2B26]/60">
-            <span className="text-[#B5532F] font-semibold">
-              *{t("crop.outlook_disclaimer")}
-            </span>
-            <span className="text-gray-500">
-              {isMarathi ? "८०% संभाव्य विश्वासार्हता श्रेणी" : "80% Prediction Interval"}
-            </span>
+          <div className="pt-2 flex flex-col gap-1 text-[10px] text-[#2B2B26]/60">
+            <div className="flex items-center justify-between">
+              <span className="text-[#B5532F] font-semibold">
+                *{t("crop.outlook_disclaimer")}
+              </span>
+              <span className="text-gray-500">
+                {isMarathi ? "८०% संभाव्य विश्वासार्हता श्रेणी" : "80% Prediction Interval"}
+              </span>
+            </div>
+            {selectedTehsil && (
+              <p className="text-[9px] text-[#2F5D3A] italic">
+                {isMarathi
+                  ? `टीप: महाराष्ट्र कृषी विभागाचे पीक कापणी प्रयोग (CCE) केवळ जिल्हा स्तरावर संकलित होतात. त्यामुळे डावीकडील पाऊस ${selectedTehsilName} चा व उजवीकडील पीक आकडेवारी नागपूर जिल्ह्याची आहे.`
+                  : `Note: Official Crop Cutting Experiments (CCE) are compiled at district level. Left shows ${selectedTehsilName} rainfall; right shows Nagpur district yield.`}
+              </p>
+            )}
           </div>
         </div>
       </div>

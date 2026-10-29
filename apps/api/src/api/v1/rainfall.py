@@ -52,14 +52,17 @@ def get_monthly_rainfall(
     items = []
     for r in records:
         en_name, mr_name = MONTH_NAMES.get(r.month, ("", ""))
+        is_monsoon = bool(r.month in (6, 7, 8, 9))
         items.append(MonthlyRainfallItem(
             year=r.year,
             month=r.month,
             month_name_en=en_name,
             month_name_mr=mr_name,
             rainfall_mm=r.rainfall_mm,
+            rainfall_actual_mm=r.rainfall_mm,
             normal_mm=None,
             departure_pct=None,
+            is_monsoon=is_monsoon,
             source_id=r.source_id,
             trust_tier=r.trust_tier
         ))

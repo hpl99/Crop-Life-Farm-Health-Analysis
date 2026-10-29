@@ -25,8 +25,10 @@ class MonthlyRainfallItem(BaseModel):
     month_name_en: str
     month_name_mr: str
     rainfall_mm: float
-    normal_mm: Optional[float]
-    departure_pct: Optional[float]
+    rainfall_actual_mm: Optional[float] = None
+    normal_mm: Optional[float] = None
+    departure_pct: Optional[float] = None
+    is_monsoon: bool = False
     source_id: str
     trust_tier: str
 
